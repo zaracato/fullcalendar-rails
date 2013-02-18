@@ -66,11 +66,11 @@ class EventsController < ApplicationController
       if @event.update_attributes(params[:event])
         format.html { redirect_to @event, notice: 'Event was successfully updated.' }
         format.json { head :no_content }
-        format.js
+        #format.js
       else
         format.html { render action: "edit" }
         format.json { render json: @event.errors, status: :unprocessable_entity }
-        format.js
+        #format.js
       end
     end
   end

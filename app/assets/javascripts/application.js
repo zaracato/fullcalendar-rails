@@ -14,14 +14,31 @@
 //= require jquery_ujs
 //= require jquery-ui-1.10.1.custom.min
 //= require fullcalendar.min
+//= require jquery.fancybox
 //= require_tree .
+
 $(document).ready(function() {
-	
+	 
+
 		var date = new Date();
 		var d = date.getDate();
 		var m = date.getMonth();
 		var y = date.getFullYear();
-		
+		change_event = function(_event, delta) {
+				console.log("evento" + _event.id);
+				$.ajax({
+					url: "events/"+_event.id+'.json',
+					data: {event:{id:_event.id,start:_event.start,end: _event.end}},
+					method: 'PUT' ,
+					datatype: 'JSON',
+					error: function(jqXHR, textStatus, errorThrown) {
+								console.log(textStatus);
+					},
+				    success: function(data) {
+				      console.log('event was success updated');
+				    }
+				});
+			}
 		$('#calendar').fullCalendar({
 			header: {
 				left: 'prev,next today',
@@ -30,24 +47,29 @@ $(document).ready(function() {
 			},
 			editable: true,
 			events: "events/",
-			eventDrop: function(_event, delta) {
-				$.ajax({
-									url: "events/"+_event.id,
-									data: {event:{id:_event.id,start:_event.start,end: _event.end}},
-									method: 'PUT' ,
-									 datatype: 'JSON',
-									 error: function(jqXHR, textStatus, errorThrown) {
-      										console.log(textStatus);
-    								},
-								    success: function(data) {
-								      alert('envio correcto');
-								    }
-									});
-			},
+			eventResize: change_event,
+			eventDrop: change_event ,
 			
 			loading: function(bool) {
 				if (bool) $('#loading').show();
 				else $('#loading').hide();
 			}
 		});
+
+		 $(".iframe").fancybox({
+	         "type":"iframe",
+	         "width": 800,
+	         "height": 600,
+	         "scrolling": 'no',
+			 "titleShow": false,
+	         'afterClose': function(){
+
+	         	//$('#calendar').fullCalendar('removeEvents')
+            	//$('#calendar').fullCalendar('addEventSource', "events/");
+            	$('#calendar').fullCalendar('refetchEvents');
+	         	//$('#calendar').fullCalendar('rerenderEvents')
+	         	console.log('render compleate');
+
+	         }
+        });
 });	
